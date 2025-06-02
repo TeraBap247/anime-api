@@ -1,0 +1,36 @@
+name: Unzip and Push Contents
+
+on:
+  workflow_dispatch:  # ম্যানুয়ালি চালানোর জন্য
+
+jobs:
+  unzip-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Install unzip
+      run: sudo apt-get install unzip
+
+    - name: Unzip anime-api-main.zip
+      run: unzip -o anime-api-main.zip
+
+    - name: Move files to root
+      run: |
+        shopt -s dotglob
+        mv -f anime-api-main/* .
+
+    - name: Delete extracted folder and zip
+      run: |
+        rm -rf anime-api-main
+        rm anime-api-main.zip
+
+    - name: Commit and Push Changes
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add .
+        git commit -m "Unzipped and moved anime-api-main contents to root" || echo "Nothing to commit"
+        git push
